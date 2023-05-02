@@ -8,8 +8,8 @@
 LiquidCrystal_I2C lcd(0x27,16,2);           // I2C address and LCD display Dimension
 Servo myservo;                             // Servo Object
 
-int IR1 = 2;                               // Pin no. of IR sensor 1
-int IR2 = 4;                              // Pin no. of IR sensor 2
+int IR1 = 4;                               // Pin no. of IR sensor 1
+int IR2 = 2;                              // Pin no. of IR sensor 2
 int servomotor = 3;                      // Pin for servo motor
 int slot = 3;                           // Number of available parking slots
 
@@ -19,6 +19,13 @@ void setup() {
   myservo.attach(servomotor);         // Attach the servo to the pin
   pinMode(IR1, INPUT);               // Set the IR sensor pins as inputs
   pinMode(IR2, INPUT);
+
+  lcd.setCursor (2,0);                  //Setting the cursor on 3rd column and 1st row
+  lcd.print("SMART PARKING");
+  lcd.setCursor (0,1);                 //Setting the cursor on 1st column and 2nd row
+  lcd.print("SYSTEM using IOT");
+  delay (3000);
+  lcd.clear();  
 }
 
 void loop() {
@@ -26,12 +33,12 @@ void loop() {
   int sensor2 = digitalRead (IR2);
 
   if (sensor1 == HIGH && sensor2 == LOW) {                // car enters in the parking lot
-    slot--;                                              // Decrease the number of available slots
+    slot++;                                              // Increment the number of available slots
     delay(500);                                         // Wait for half of a second to avoid false readings
   }
 
-  if (sensor1 == LOW && sensor2 == HIGH) {               // If a car leaves the parking lot
-    slot++;                                             // Increase the number of available slots
+  if (sensor2 == HIGH && sensor1 == LOW) {               // If a car leaves the parking lot
+    slot--;                                             // Decrement the number of available slots
     delay(500);                                       
   }
 
@@ -46,17 +53,16 @@ void loop() {
    if (slot == 0) {                               // If no parking slots are available
     myservo.write(180);                          // Setting the servo motor to the maximum angle
     lcd.clear();                                
-    lcd.setCursor(0,0);                          // Set the cursor to the first row of the LCD display
-    lcd.print("    SORRY :(    ");            
-    lcd.setCursor(0,1);                          // Set the cursor to the second row
-    lcd.print("  Parking Full  "); 
+    lcd.setCursor(4,0);                          //Setting the cursor on 5th column and 1st row
+    lcd.print("SORRY :(");            
+    lcd.setCursor(2,1);                          //Setting the cursor on 3rd column and 2nd row 
+    lcd.print("Parking Full"); 
   } else { 
     myservo.write(slot * 18);                           // Map the slot count to the angle of the servo motor (180 degrees for 10 slots)
-  
-  lcd.setCursor(0,0);                                
-  lcd.print("    WELCOME!    ");                   
-  lcd.setCursor(0,1);                                                       
-  lcd.print("slot Left: ");
+  lcd.setCursor(4,0);                            //Setting the cursor on 5th column and 1st row    
+  lcd.print("WELCOME!");                   
+  lcd.setCursor(2,1);                            //Setting the cursor on 3rd column and 2nd row                         
+  lcd.print("Slot Left: ");
   lcd.print(slot); 
   }                               
 
